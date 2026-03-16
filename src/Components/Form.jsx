@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import { useTask } from "../context/TaskContext";
+import { useTask } from "../Context/TaskContext";
 
 export default function TaskForm() {
     const { addTask } = useTask();

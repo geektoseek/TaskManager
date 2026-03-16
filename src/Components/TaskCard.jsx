@@ -1,4 +1,4 @@
-import { useTask } from "../context/TaskContext";
+import { useTask } from "../Context/TaskContext";
 import React from "react";
 
 export default function TaskCard({ task }) {
