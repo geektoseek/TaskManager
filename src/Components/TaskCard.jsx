@@ -22,7 +22,7 @@ export default function TaskCard({ task }) {
                         <span className={`font-medium ${priorityColor[task.priority]}`}>
                             {task.priority.toUpperCase()}
                         </span>
-                        <span className="text-gray-400">📅 {task.dueDate}</span>
+                        <span className="text-gray-800">📅 {task.dueDate}</span>
                     </div>
                 </div>
 

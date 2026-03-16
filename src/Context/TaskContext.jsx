@@ -15,13 +15,19 @@ export function TaskProvider({ children }) {
     };
 
     const toggleComplete = (id) => {
-        setTasks(tasks.map((t) =>
-            t.id === id ? { ...t, completed: !t.completed } : t
-        ));
+        setTasks(
+            tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+        );
+    };
+
+    const editTask = (id, updatedTask) => {
+        setTasks(
+            tasks.map((t) => (t.id === id ? { ...t, ...updatedTask } : t))
+        );
     };
 
     return (
-        <TaskContext.Provider value={{ tasks, addTask, deleteTask, toggleComplete }}>
+        <TaskContext.Provider value={{ tasks, addTask, deleteTask, toggleComplete, editTask }}>
             {children}
         </TaskContext.Provider>
     );

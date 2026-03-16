@@ -2,56 +2,129 @@ import { useState } from "react";
 import React from "react";
 import { useTask } from "../Context/TaskContext";
 
+const users = ["Ali", "Ahmed", "Sara", "Usman", "Ayesha"];
+
+const emptyForm = {
+    title: "",
+    description: "",
+    priority: "medium",
+    dueDate: "",
+    assignedTo: "",
+};
+
 export default function TaskForm() {
-    const { addTask } = useTask();
-    const [form, setForm] = useState({ title: "", description: "", priority: "medium", dueDate: "" });
+    const { addTask, editTask } = useTask();
+    const [form, setForm] = useState(emptyForm);
+    const [editingId, setEditingId] = useState(null);
+
+    // Expose startEdit so TaskList can call it
+    TaskForm.startEdit = (task) => {
+        setForm({
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            dueDate: task.dueDate,
+            assignedTo: task.assignedTo,
+        });
+        setEditingId(task.id);
+    };
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!form.title || !form.dueDate) return alert("Title and Due Date are required!");
-        addTask(form);
-        setForm({ title: "", description: "", priority: "medium", dueDate: "" });
+        if (!form.title || !form.dueDate) return alert("Title and due date are required!");
+
+        if (editingId) {
+            editTask(editingId, form);
+            setEditingId(null);
+        } else {
+            addTask(form);
+        }
+
+        setForm(emptyForm);
+    };
+
+    const handleCancel = () => {
+        setForm(emptyForm);
+        setEditingId(null);
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-gray-600 p-6 rounded-lg shadow mb-6">
-            <h2 className="text-xl font-bold mb-4">Add New Task</h2>
+        <form onSubmit={handleSubmit} className="bg-gray-600 p-6 rounded shadow mb-6">
+            <h2 className="text-xl font-bold mb-4">
+                {editingId ? "Edit Task" : "Add Task"}
+            </h2>
 
             <input
-                className="w-full border rounded p-2 mb-3"
-                placeholder="Task Title *"
+                type="text"
+                name="title"
+                placeholder="Title *"
                 value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mb-3"
             />
 
             <textarea
-                className="w-full border rounded p-2 mb-3"
+                name="description"
                 placeholder="Description"
-                rows={3}
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mb-3"
+                rows={3}
             />
 
             <select
-                className="w-full border rounded p-2 mb-3"
+                name="priority"
                 value={form.priority}
-                onChange={(e) => setForm({ ...form, priority: e.target.value })}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mb-3"
             >
-                <option value="low">Low Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="high">High Priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
             </select>
 
             <input
                 type="date"
-                className="w-full border rounded p-2 mb-4"
+                name="dueDate"
                 value={form.dueDate}
-                onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mb-3"
             />
 
-            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-                Add Task
-            </button>
+            <select
+                name="assignedTo"
+                value={form.assignedTo}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mb-4"
+            >
+                <option value="">-- Assign to User --</option>
+                {users.map((user) => (
+                    <option key={user} value={user}>{user}</option>
+                ))}
+            </select>
+
+            <div className="flex gap-2">
+                <button
+                    type="submit"
+                    className="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                    {editingId ? "Update Task" : "Add Task"}
+                </button>
+
+                {editingId && (
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="flex-1 bg-gray-200 text-gray-700 p-2 rounded hover:bg-gray-300"
+                    >
+                        Cancel
+                    </button>
+                )}
+            </div>
         </form>
     );
 }
